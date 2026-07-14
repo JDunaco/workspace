@@ -1,12 +1,16 @@
 from car import Car
 from rider import Rider
+from graph import Graph
 
 class Simulation:
 
-    def __init__(self):
+    def __init__(self, map_filename):
         # initialize dictionaries
         self.car_data = {} # car_data {"id" : "Car_Class_Object"}
         self.rider_data = {} # rider_data {"id" : "Rider_Class_Object"}
+        self.mapData = Graph()
+        self.map = self.mapData.load_from_file(map_filename)
+        
 
     # New Driver info
     def new_car(self, id, location):
@@ -19,11 +23,19 @@ class Simulation:
         self.rider_data[f'Rider-{id}'] = Rider(id, location, destination)
         print(f"New Rider added to our system : {self.rider_data[f'Rider-{id}'].id} at {self.rider_data[f'Rider-{id}'].starting_location}")
 
-    def display_info(self):
-        print("\nDrivers in Service")
-        for car, details in self.car_data.items():
-            print(f"ID: {car}, Details: {details.__str__()}")
-        print("\n\nRiders in System")
-        for rider, details in self.rider_data.items():
-            print(f"ID: {rider}, Details: {details.__str__()}")
-        print("\n\n All users in system found")
+    # Add nodes to map
+    def add_map_paths(self, start, end, travel_time):
+        self.mapData.add_edge(start, end, travel_time)
+        self.map = self.mapData.get_list()
+
+    def display_info(self, test_value):
+        if test_value == 1:
+            print("\nDrivers in Service")
+            for car, details in self.car_data.items():
+                print(f"ID: {car}, Details: {details.__str__()}")
+            print("\n\nRiders in System")
+            for rider, details in self.rider_data.items():
+                print(f"ID: {rider}, Details: {details.__str__()}")
+            print("\n\n All users in system found")
+        elif test_value == 2:
+            self.mapData.__str__()
