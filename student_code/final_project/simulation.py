@@ -9,8 +9,20 @@ class Simulation:
         self.car_data = {} # car_data {"id" : "Car_Class_Object"}
         self.rider_data = {} # rider_data {"id" : "Rider_Class_Object"}
         self.mapData = Graph()
-        self.map = self.mapData.load_from_file(map_filename)
+        self.mapData.load_from_file(map_filename)
+        self.map = self.mapData.get_list()
         
+
+    def calculate_route(self, car_id, destination):
+        car_key = f"Car-{car_id}"
+        if car_key not in self.car_data:
+            print(f"ERROR: {car_key} not found in system.")
+            return
+        
+        car = self.car_data[car_key]
+        car.calculate_route(destination, self.map)
+
+        print(f"Route calculated for {car_key}: {car.route} (time: {car.route_time})")
 
     # New Driver info
     def new_car(self, id, location):
