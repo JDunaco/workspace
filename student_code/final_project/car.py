@@ -4,7 +4,8 @@ class Car:
     def __init__(self, car_id, location):
         self.id = car_id
         self.location = (location)
-        self.status = "available"  # other states: "unavailable", "going_to_pickup", "going_to_destination"
+        self.assigned_rider = None
+        self.status = "available"  # "available" | "en_route_to_pickup" | "en_route_to_destination"
         self.destination = "None"  # Going to be (x,y) coords
         self.route = None          # NEW: stores the planned path (list of nodes)
         self.route_time = None     # NEW: stores the total travel time for that path
