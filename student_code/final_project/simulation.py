@@ -31,6 +31,8 @@ class Simulation:
         self.map = self.mapData.get_list()
         self.current_time = 0
         self.event_queue = []
+        self.trip_log = []
+        self.num_cars = 0
         
         
 
@@ -47,6 +49,7 @@ class Simulation:
 
     # New Driver info
     def new_car(self, id, location):
+        self.num_cars =+ 1
         car_to_add = Car(id, location)
         self.car_data[f"Car-{id}"] = car_to_add
         print(f"New Car added to our system : {self.car_data[f'Car-{id}'].id} at {self.car_data[f'Car-{id}'].location}")
@@ -71,6 +74,7 @@ class Simulation:
             self.mapData.__str__()
 
     def handle_rider_request(self, rider):
+        rider.request_time = self.current_time
         car = self.find_closest_car_brute_force(rider.starting_location)
         if car is None:
             print(f"TIME {self.current_time}: No available car for RIDER {rider.id}")
@@ -87,8 +91,8 @@ class Simulation:
 
     def handle_arrival(self, car):
         rider = car.assigned_rider
-
         if car.status == "en_route_to_pickup":
+            rider.pickup_time = self.current_time
             print(f"TIME {self.current_time}: CAR {car.id} picked up RIDER {rider.id}")
             car.location = rider.starting_location
             car.status = "en_route_to_destination"
@@ -98,6 +102,8 @@ class Simulation:
             self.schedule_event(Event(self.current_time + dropoff_duration, "ARRIVAL", car))
 
         elif car.status == "en_route_to_destination":
+            rider.dropoff_time = self.current_time
+            self.log_trip_data(rider)
             print(f"TIME {self.current_time}: CAR {car.id} dropped off RIDER {rider.id}")
             car.location = rider.destination
             car.status = "available"
@@ -122,6 +128,50 @@ class Simulation:
                 best_car = car
         return best_car
 
+    def log_trip_data(self, rider):
+        trip_record = {
+            'rider_id': rider.id,
+            'request_time': rider.request_time,
+            'pickup_time': rider.pickup_time,
+            'dropoff_time': rider.dropoff_time,
+            # run calculations here for convenience
+            'wait_time': rider.pickup_time - rider.request_time,
+            'trip_duration': rider.dropoff_time - rider.pickup_time
+        }
+        self.trip_log.append(trip_record)
+        print(f"TIME {self.current_time:.2f}: Trip for {rider.id} completed and logged.")
+
+    def analyze_results(self):
+        """Processes the trip_log to calculate and return final KPIs"""
+        if not self.trip_log:
+            print("No trips were completed, no analysis to run.")
+            return None 
+
+        # Calculate indiviual KPIs
+        total_wait_time = sum(trip['wait_time'] for trip in self.trip_log)
+        total_trip_duration = sum(trip['trip_duration'] for trip in self.trip_log)
+        
+        total_time_on_trips = total_trip_duration # Assuming travel to pickup is part of trip duration for utilization
+        total_potential_time = self.num_cars * self.current_time if self.num_cars > 0 else 0
+
+        # Assemble results into a dictionary
+        results = {
+            "completed_trips": len(self.trip_log),
+            "average_wait_time": total_wait_time / len(self.trip_log),
+            "average_trip_duration": total_trip_duration / len(self.trip_log),
+            "driver_utilization_percent": (total_time_on_trips / total_potential_time) * 100 if total_potential_time > 0 else 0
+        }
+
+        # You can print a formatted summary here
+        print("\n--- Simulation Analysis ---")
+        print(f"Completed Trips: {results['completed_trips']}")
+        print(f"Average Rider Wait Time: {results['average_wait_time']:.2f} time units")
+        print(f"Average Trip Duration: {results['average_trip_duration']:.2f} time units")
+        print(f"Driver Utilization: {results['driver_utilization_percent']:.2f}%")
+        print("---------------------------\n")
+
+        return results
+
 
     def new_rider(self, id, location, destination, request_time=0):
         rider = Rider(id, location, destination)
@@ -140,7 +190,8 @@ class Simulation:
                 self.handle_rider_request(event.metadata)
             elif event.event_type == "ARRIVAL":
                 self.handle_arrival(event.metadata)
-
+        print(f"{self.trip_log}")
+        self.analyze_results()
 
 if __name__ == "__main__":
     sim = Simulation("map.csv")

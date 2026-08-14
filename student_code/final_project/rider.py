@@ -1,6 +1,9 @@
 class Rider:
     def __init__(self, rider_id, start_location, destination):
         self.id = rider_id
+        self.request_time = 0
+        self.pickup_time = 0
+        self.dropoff_time = 0
         self.starting_location = start_location
         self.destination = destination
         self.status = "waiting" # set for "waiting", "in_car", "completed"
