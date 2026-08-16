@@ -46,7 +46,7 @@ last event actually processed, not the generation cutoff.
 python3 simulation.py --map-file city_map.csv --num-riders 50
 
 # Production map, 100 cars, run for 3600 simulated seconds, reproducible
-python3 simulation.py --map-file production_map.csv --num-cars 100 --max-time 3600 --random-seed 42
+python3 simulation.py --map-file city_map.csv --num-cars 100 --max-time 3600 --random-seed 42
 
 # Wider candidate pool per match
 python3 simulation.py
