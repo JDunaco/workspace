@@ -29,8 +29,5 @@ class Car:
 
         return self.route, self.route_time
 
-    def __str__(self):
-        if self.destination == "None":
-            return f"Car {self.id} is no where. - Status: {self.status}"
-        else:
-            return f"Car {self.id} is at {self.location} - Status: {self.status}"
+    def __str__(self):       
+        return f"Car {self.id} is no where. - Status: {self.status}"

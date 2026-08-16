@@ -4,6 +4,7 @@ from car import Car
 from rider import Rider
 from graph import Graph, find_nearest_vertex
 from quadtree import Quadtree, Point
+from pathfinding import find_shortest_path
 import argparse
 import random
 import matplotlib
@@ -365,11 +366,11 @@ class Simulation:
         print(f"Visualization saved to {output_path}")
         return output_path
 
-    def schedule_event(self, event):
+    def schedule_event(self, timestamp, event_type, data):
         """ Add event to event_queue"""
         heapq.heappush(
             self.events, 
-            (timestam, next(self.event_sequence), event_type, data),
+            (timestamp, next(self.event_sequence), event_type, data),
             )
 
     def find_closest_car_brute_force(self, rider_location):
@@ -396,10 +397,10 @@ class Simulation:
             'dropoff_time': rider.dropoff_time,
             # run calculations here for convenience
             'wait_time': wait_time,
-            'trip_duration': dropoff_time,
+            'trip_duration': trip_duration,
         }
         self.trip_log.append(trip_record)
-        return record
+        return trip_record
 
     def analyze_results(self):
         total_generated = self.riders_generated
@@ -498,5 +499,6 @@ if __name__ == "__main__":
         candidate_count=args.candidate_count,
         random_seed=args.random_seed,
     )
+    sim.run()
 
 # Other Space for additions (add stuff above this line)
