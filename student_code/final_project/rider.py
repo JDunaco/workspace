@@ -1,16 +1,16 @@
 class Rider:
-    def __init__(self, rider_id, start_location, destination):
+    def __init__(self, rider_id, starting_location, destination):
         self.id = rider_id
-        self.request_time = 0
-        self.pickup_time = 0
-        self.dropoff_time = 0
-        self.starting_location = start_location
+        self.request_time = None
+        self.pickup_time = None
+        self.dropoff_time = None
+        self.start_location = starting_location
         self.destination = destination
         self.status = "waiting" # set for "waiting", "in_car", "completed"
 
     def __str__(self):
         if self.status == "waiting":
-            return f"Rider {self.id} is at {self.starting_location} waiting for a ride to {self.destination}"
+            return f"Rider {self.id} is at {self.start_location} waiting for a ride to {self.destination}"
         elif self.status == "in_car":
             return f"Rider {self.id} is en route to {self.destination}."
         else :
