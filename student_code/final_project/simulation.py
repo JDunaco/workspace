@@ -61,7 +61,7 @@ class Simulation:
         xs = [x for x, y in self.mapData.node_coordinates.values()]
         ys = [ y for x, y in self.mapData.node_coordinates.values()]
         min_x, max_x = min(xs), max(xs)
-        min_y, max_y = min(yx), max(ys)
+        min_y, max_y = min(ys), max(ys)
 
         center_x = (min_x + max_x) / 2
         center_y = (min_y + max_y) / 2
@@ -499,6 +499,12 @@ if __name__ == "__main__":
         candidate_count=args.candidate_count,
         random_seed=args.random_seed,
     )
+
+    num_cars_to_create = args.num_cars if args.num_cars is not None else 5  # or 100 for production
+    for car_id in range(1, num_cars_to_create + 1):
+        location = sim.random_point_in_bounds()
+        sim.new_car(car_id, location)
+
     sim.run()
 
 # Other Space for additions (add stuff above this line)
